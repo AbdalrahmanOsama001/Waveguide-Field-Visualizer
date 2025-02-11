@@ -153,7 +153,8 @@ class WaveguideApp:
             x_cut (float): X-cut position (0-1 relative to width)
         """
         axs = fig.subplots(2, 2)
-        fig.suptitle(f"Waveguide Field Plots - Mode: {mode}, m: {m}, n: {n}", fontsize=14)
+        MODE = "TE" if mode == 1 else "TM"
+        fig.suptitle(f"Rectangular Waveguide Field Plots - Mode: {MODE}{m}{n}", fontsize=14)
         
         self.waveguide_transversal_section(mode, m, n, z, axs[0, 0])
         self.waveguide_side_section(mode, m, n, z, x_cut, axs[0, 1])
