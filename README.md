@@ -1,6 +1,6 @@
 # Waveguide Field Visualizer
 
-![Application Screenshot](screenshot.png)
+![Application Screenshot](testscreenshot.png)
 
 A Python application for visualizing electromagnetic field patterns in rectangular waveguides, supporting both TE and TM modes.
 
