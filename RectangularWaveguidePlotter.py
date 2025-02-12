@@ -227,6 +227,8 @@ class WaveguideApp:
         regions_y = 2 * n + 1
         x_vals = np.linspace(0, a, regions_x)
         y_vals = np.linspace(0, b, regions_y)
+        if n == 0:  # if n==0, center y at b/2
+            y_vals = np.array([b/2])
         X, Y = np.meshgrid(x_vals, y_vals, indexing='ij')
         Ex, Ey, Hx, Hy, Hz, Ez = (np.zeros(X.shape) for _ in range(6))
 
@@ -261,7 +263,7 @@ class WaveguideApp:
         ax.set_title(f"Transversal Section (XY) at Z = {z:.2f}λ")
         
         grid_spacing_x = a / (regions_x - 1)
-        grid_spacing_y = b / (regions_y - 1)
+        grid_spacing_y = b if regions_y == 1 else b / (regions_y - 1)  # avoid division by zero when n==0
         arrow_length = 0.4 * min(grid_spacing_x, grid_spacing_y)
         
         Ex_scaled, Ey_scaled = scale_vectors(Ex, Ey, arrow_length)
@@ -296,6 +298,8 @@ class WaveguideApp:
         a, b = 1, 1
         z_vals = np.array([z - 0.5, z - 0.25, z, z + 0.25, z + 0.5])
         Y_fixed = np.clip(y_cut * b, 0, b)
+        if n == 0:  # if n==0, center y at b/2
+            Y_fixed = b/2
         regions_x = 2 * m + 1
         x_vals = np.linspace(0, a, regions_x)
         X, Z = np.meshgrid(x_vals, z_vals, indexing='ij')
@@ -386,6 +390,8 @@ class WaveguideApp:
         X_fixed = np.clip(x_cut * a, 0, a)
         regions_y = 2 * n + 1
         y_vals = np.linspace(0, b, regions_y)
+        if n == 0:  # if n==0, center y at b/2
+            y_vals = np.array([b/2])
         Y, Z = np.meshgrid(y_vals, z_vals, indexing='ij')
 
         siny = np.sin(n * np.pi * Y / b)
@@ -412,7 +418,7 @@ class WaveguideApp:
             k_c = np.sqrt((m * np.pi / a)**2 + (n * np.pi / b)**2)
             scaling = B / k_c**2
             Ez_side = sinx_val * siny * cosz
-            Ex_side = -scaling * (m * np.pi / a) * cosx_val * siny * sinz
+            Ex_side = scaling * (m * np.pi / a) * cosx_val * siny * sinz
             Ey_side = -scaling * (n * np.pi / b) * sinx_val * cosy * sinz
             Hx_side = (n * np.pi / b) * sinx_val * cosy * sinz
             Hy_side = - (m * np.pi / a) * cosx_val * siny * sinz
@@ -430,7 +436,7 @@ class WaveguideApp:
         ax.set_ylabel("Y-axis")
         ax.set_title(f"Side Section (ZY) at X = {X_fixed:.2f}a")
         
-        grid_spacing_y = b / (regions_y - 1)
+        grid_spacing_y = b if regions_y == 1 else b / (regions_y - 1)  # avoid division by zero when n==0
         arrow_length = 0.4 * grid_spacing_y
         
         Ez_scaled, Ey_scaled = scale_vectors(Ez_side, Ey_side, arrow_length)
