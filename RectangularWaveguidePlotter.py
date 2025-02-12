@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -108,6 +109,17 @@ class WaveguideApp:
         # Configure grid weights
         root.grid_columnconfigure(1, weight=1)
         root.grid_rowconfigure(0, weight=1)
+        
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.canvas = None 
+        
+    def on_close(self):
+        """Clean up resources before closing"""
+        plt.close('all')  # Close all matplotlib figures
+        if self.canvas:
+            self.canvas.get_tk_widget().destroy()  # Destroy canvas
+        self.root.destroy()  # Terminate Tkinter
+        sys.exit(0)  # Ensure full exit
 
     def generate_plot(self):
         """Validate inputs and generate updated field visualizations.
@@ -139,6 +151,9 @@ class WaveguideApp:
         # Generate plots
         self.create_plots(fig, mode, m, n, z, y_cut, x_cut)
         canvas.draw()
+        
+        self.canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def create_plots(self, fig, mode, m, n, z, y_cut, x_cut):
         """Create the 2x2 plot grid with field visualizations.
