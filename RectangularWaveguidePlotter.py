@@ -1,4 +1,6 @@
 import sys
+import os
+import gc
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -83,6 +85,8 @@ class WaveguideApp:
         # Plot Frame
         self.plot_frame = ttk.Frame(root)
         self.plot_frame.grid(row=0, column=1, sticky="nsew")
+        self.plot_frame.grid_rowconfigure(0, weight=1)
+        self.plot_frame.grid_columnconfigure(0, weight=1)
         
         # Credits Frame
         credits_frame = ttk.Frame(root, padding="10")
@@ -111,15 +115,21 @@ class WaveguideApp:
         root.grid_rowconfigure(0, weight=1)
         
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
-        self.canvas = None 
+        self.active_figures = []  # Track all figures to close on exit
         
     def on_close(self):
-        """Clean up resources before closing"""
-        plt.close('all')  # Close all matplotlib figures
-        if self.canvas:
-            self.canvas.get_tk_widget().destroy()  # Destroy canvas
-        self.root.destroy()  # Terminate Tkinter
-        sys.exit(0)  # Ensure full exit
+        """Force-clean all resources"""
+        # Close all matplotlib figures
+        plt.close('all')
+        # Destroy all plot elements
+        if hasattr(self, 'canvas'):
+            self.canvas.get_tk_widget().destroy()
+            del self.canvas
+        # Force garbage collection
+        gc.collect()
+        # Nuclear option for process termination
+        self.root.destroy()
+        os._exit(0)  # Harshest termination
 
     def generate_plot(self):
         """Validate inputs and generate updated field visualizations.
@@ -139,12 +149,18 @@ class WaveguideApp:
             tk.messagebox.showerror("Error", "Invalid input values")
             return
 
-        # Clear previous plot
+        # Clear previous plots
         for widget in self.plot_frame.winfo_children():
             widget.destroy()
+        # Explicitly close previous figures
+        for fig in self.active_figures:
+            plt.close(fig)
+        self.active_figures = []
+        
 
         # Create new figure and canvas
         fig = plt.figure(figsize=(10, 8))
+        self.active_figures.append(fig)
         canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
@@ -439,5 +455,7 @@ class WaveguideApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.state('zoomed')  # Open window fullscreen (maximized)
     app = WaveguideApp(root)
+    root.protocol("WM_DELETE_WINDOW", app.on_close)
     root.mainloop()
