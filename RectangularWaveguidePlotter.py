@@ -169,8 +169,8 @@ class WaveguideApp:
         
         Marker Description:
         Arrows: In-plane components
-        'o': Out-of-plane positive
-        'x': Out-of-plane negative"""
+        'o': Out-of-plane negative
+        'x': in-plane positive"""
         ax_legend.text(0.5, 0.5, description_text, ha='center', va='center')
         
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
@@ -257,8 +257,8 @@ class WaveguideApp:
         Features:
             - Shows longitudinal (Z-axis) field variations
             - Displays out-of-plane components using markers:
-              * 'o' for positive Y-direction fields
-              * 'x' for negative Y-direction fields
+              * 'o' for negative Y-direction fields
+              * 'x' for positive Y-direction fields
             - Inverts Y-axis to match waveguide propagation convention
         """
         B = 2 * np.pi
