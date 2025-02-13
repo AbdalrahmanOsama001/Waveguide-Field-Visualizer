@@ -89,20 +89,20 @@ class WaveguideApp:
         self.plot_frame.grid_columnconfigure(0, weight=1)
         
         # Credits Frame
-        credits_frame = ttk.Frame(root, padding="10")
-        credits_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
+        self.credits_frame = ttk.LabelFrame(root, text="Credits", padding="10")
+        self.credits_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
         
         def open_url(url):
             webbrowser.open(url)
         
-        credits_text = "Created by Abdalrahman Osama | "
+        credits_text1 = "Created by Abdalrahman Osama | CCE-E'24"
         github_link = "GitHub Repository"
         
-        credits_label = tk.Label(credits_frame, text=credits_text, fg="black", cursor="arrow")
-        credits_label.pack(side=tk.LEFT)
+        credits_label = tk.Label(self.credits_frame, text=credits_text1, fg="black", cursor="arrow", font="Helvetica 10 bold")
+        credits_label.pack(side=tk.TOP)
         
-        github_label = tk.Label(credits_frame, text=github_link, fg="blue", cursor="hand2")
-        github_label.pack(side=tk.LEFT)
+        github_label = tk.Label(self.credits_frame, text=github_link, fg="blue", cursor="hand2", font="Helvetica 10 bold")
+        github_label.pack(side=tk.TOP)
         github_label.bind("<Button-1>", lambda e: open_url("https://github.com/AbdalrahmanOsama001/Waveguide-Field-Visualizer"))
         
         # Add underline to hyperlink
@@ -113,6 +113,7 @@ class WaveguideApp:
         # Configure grid weights
         root.grid_columnconfigure(1, weight=1)
         root.grid_rowconfigure(0, weight=1)
+        root.grid_rowconfigure(1, weight=0)
         
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.active_figures = []  # Track all figures to close on exit
@@ -191,20 +192,20 @@ class WaveguideApp:
         self.waveguide_side_section(mode, m, n, z, x_cut, axs[0, 1])
         self.waveguide_top_section(mode, m, n, z, y_cut, axs[1, 0])
         
-        # Add legend
+        # Legend area now only contains the description text (credits removed)
         ax_legend = axs[1, 1]
         ax_legend.axis('off')
         description_text = """Color Description:
-        E-field: Blue
-        H-field: Red
-        
-        Marker Description:
-        Arrows: In-plane components
-        'o': Out-of-plane negative
-        'x': in-plane positive"""
+E-field: Blue
+H-field: Red
+
+Marker Description:
+Arrows: In-plane components
+'o': Out-of-plane negative
+'x': In-plane positive"""
         ax_legend.text(0.5, 0.5, description_text, ha='center', va='center')
         
-        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+        plt.tight_layout(rect=[0, 0.05, 1, 0.90])
 
     def waveguide_transversal_section(self, mode, m, n, z, ax):
         """Plot transversal (XY-plane) field components at specified Z-position.
